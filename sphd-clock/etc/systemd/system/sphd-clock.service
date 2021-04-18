@@ -1,0 +1,10 @@
+[Unit]
+Description=Scroll pHAT HD clock service
+After=multi-user.target
+
+[Service]
+Type=idle
+ExecStart=/usr/local/bin/sphd-clock
+
+[Install]
+WantedBy=multi-user.target

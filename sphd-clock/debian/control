@@ -1,0 +1,8 @@
+Package: sphd-clock
+Version: 1.0-1
+Section: base
+Priority: optional
+Architecture: all
+Depends: python3-scrollphathd (>= 1.2.1)
+Maintainer: Liam Newmarch <liamnewmarch@users.noreply.github.com>
+Description: Scroll pHAT HD clock
