@@ -1,5 +1,5 @@
 PACKAGE := sphd-clock
-VERSION := 1.0-1
+VERSION := 1.1-1
 FILENAME := $(PACKAGE)_$(VERSION)_all.deb
 
 default: build

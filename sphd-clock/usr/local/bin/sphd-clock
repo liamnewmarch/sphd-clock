@@ -44,7 +44,7 @@ try:
     signal.signal(signal.SIGINT, exit)
     signal.signal(signal.SIGTERM, exit)
 
-    print("Scroll pHAT HD clock v1.0")
+    print("Scroll pHAT HD clock v1.1")
     print("Press Ctrl-C to exit")
 
     while True:
