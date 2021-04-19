@@ -6,9 +6,10 @@ A simple Debian package which provides a `sphd-clock` service.
 
 You can either download a pre-built deb file, or build one yourself.
 
-To install a pre-build deb file, download it and run:
+To install a pre-build deb file, [download it](/liamnewmarch/sphd-clock/releases/) and run:
 
 ```sh
+wget https://github.com/liamnewmarch/sphd-clock/releases/download/v1.0/sphd-clock_1.0-1_all.deb
 dpkg --install sphd-clock_1.0-1_all.deb
 ```
 
