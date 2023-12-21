@@ -21,7 +21,7 @@ class Schedule:
 
     def is_active(self, when: datetime) -> bool:
         hour_min = (when.hour, when.minute)
-        return hour_min > self.start_time and hour_min < self.end_time
+        return hour_min >= self.start_time and hour_min < self.end_time
 
 
 class SphdClock:
@@ -78,7 +78,7 @@ if __name__ == "__main__":
         signal(SIGINT, exit)
         signal(SIGTERM, exit)
 
-        print("Scroll pHAT HD clock v1.2-2")
+        print("Scroll pHAT HD clock v1.2-3")
         print("Press Ctrl-C to exit")
 
         clock = SphdClock("/etc/sphd-clock/config.yaml")
