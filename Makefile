@@ -1,8 +1,9 @@
 PACKAGE := sphd-clock
-VERSION := 1.1-1
+VERSION := 1.2-2
 FILENAME := $(PACKAGE)_$(VERSION)_all.deb
 
-default: build
+.DEFAULT_GOAL: build
+.PHONY: default, build, clean, install
 
 build:
 	@dpkg-deb --build $(PACKAGE) $(FILENAME)
@@ -14,6 +15,3 @@ clean:
 
 install: build
 	@sudo dpkg --install $(FILENAME)
-
-
-.PHONY: default, build, clean, install

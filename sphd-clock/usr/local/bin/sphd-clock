@@ -1,57 +1,91 @@
 #!/usr/bin/env python3
 
-import signal
-import sys
+from datetime import datetime
+from signal import signal, SIGINT, SIGTERM
 import time
+from typing import Tuple
 
-import scrollphathd
+import scrollphathd as sphd
 from scrollphathd.fonts import font3x5 as font
+import yaml
 
 
-def clear():
-    """Clear the display."""
-    scrollphathd.clear()
+class Schedule:
+    """A daily Schedule with a start and end time."""
+    start_time: Tuple[int, int]
+    end_time: Tuple[int, int]
+
+    def __init__(self, start_time: int, end_time: int):
+        self.start_time = divmod(int(start_time), 60)
+        self.end_time = divmod(int(end_time), 60)
+
+    def is_active(self, when: datetime) -> bool:
+        hour_min = (when.hour, when.minute)
+        return hour_min > self.start_time and hour_min < self.end_time
 
 
-def exit(*args):
-    """Exit cleanly."""
-    print("\nExiting...")
-    clear()
-    sys.exit(0)
+class SphdClock:
+    """Scroll pHAT HD Clock"""
+    blink: bool= False
+    schedule: Schedule = None
 
+    def __init__(self, config_path: str):
+        with open(config_path, "r") as stream:
+            data = yaml.safe_load(stream)
 
-def draw_time():
-    """Draw the current time to the display with flashing separator."""
-    scrollphathd.write_string(
-        time.strftime("%H:%M"),
-        brightness=0.1,
-        font=font,
-        x=0,
-        y=1,
-    )
+        if not data:
+            return
 
-    if int(time.time()) % 2 == 0:
-        scrollphathd.clear_rect(8, 0, 1, 5)
+        if "blink" in data:
+            self.blink = bool(data["blink"])
 
-    scrollphathd.show()
+        if "rotate" in data:
+            sphd.rotate(int(data["rotate"]))
 
+        if "schedule" in data:
+            self.schedule = Schedule(
+                start_time = data["schedule"]["start_time"],
+                end_time = data["schedule"]["end_time"],
+            )
 
-try:
-    # Rotate the display
-    scrollphathd.rotate(degrees=180)
+    def tick(self):
+        """Draw the current time to the display with flashing separator."""
+        now = datetime.now()
+        sphd.clear()
 
-    # Handle signals
-    signal.signal(signal.SIGINT, exit)
-    signal.signal(signal.SIGTERM, exit)
+        if schedule := self.schedule:
+            if not schedule.is_active(now):
+                time.sleep(1)
+                return
 
-    print("Scroll pHAT HD clock v1.1")
-    print("Press Ctrl-C to exit")
+        sphd.write_string(
+            now.strftime("%H:%M"),
+            brightness=0.1,
+            font=font,
+            x=0,
+            y=1,
+        )
 
-    while True:
-        clear()
-        draw_time()
+        if self.blink and now.second % 2 == 0:
+            sphd.clear_rect(8, 0, 1, 5)
+
+        sphd.show()
         time.sleep(0.1)
 
-# Handle Ctrl-C
-except KeyboardInterrupt:
-    exit()
+
+if __name__ == "__main__":
+    try:
+        signal(SIGINT, exit)
+        signal(SIGTERM, exit)
+
+        print("Scroll pHAT HD clock v1.2-2")
+        print("Press Ctrl-C to exit")
+
+        clock = SphdClock("/etc/sphd-clock/config.yaml")
+
+        while True:
+            clock.tick()
+
+    except KeyboardInterrupt:
+        print("\nExiting...")
+        sphd.clear()
