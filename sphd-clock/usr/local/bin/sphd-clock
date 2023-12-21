@@ -3,7 +3,6 @@
 from datetime import datetime
 from signal import signal, SIGINT, SIGTERM
 import time
-from typing import Tuple
 
 import scrollphathd as sphd
 from scrollphathd.fonts import font3x5 as font
@@ -11,9 +10,10 @@ import yaml
 
 
 class Schedule:
-    """A daily Schedule with a start and end time."""
-    start_time: Tuple[int, int]
-    end_time: Tuple[int, int]
+    """A daily Schedule with a start and end time"""
+
+    start_time: tuple[int, int]
+    end_time: tuple[int, int]
 
     def __init__(self, start_time: int, end_time: int):
         self.start_time = divmod(int(start_time), 60)
@@ -25,9 +25,11 @@ class Schedule:
 
 
 class SphdClock:
-    """Scroll pHAT HD Clock"""
-    blink: bool= False
-    schedule: Schedule = None
+    """A Clock for the Scroll pHAT HD """
+
+    active: bool = True
+    blink: bool = False
+    schedule: Schedule | None = None
 
     def __init__(self, config_path: str):
         with open(config_path, "r") as stream:
@@ -44,20 +46,26 @@ class SphdClock:
 
         if "schedule" in data:
             self.schedule = Schedule(
-                start_time = data["schedule"]["start_time"],
-                end_time = data["schedule"]["end_time"],
+                start_time=data["schedule"]["start_time"],
+                end_time=data["schedule"]["end_time"],
             )
 
     def tick(self):
         """Draw the current time to the display with flashing separator."""
+
         now = datetime.now()
+
+        if self.schedule and not self.schedule.is_active(now):
+            if self.active:
+                self.active = False
+                sphd.clear()
+                sphd.show()
+
+            time.sleep(1)
+            return
+
+        self.active = True
         sphd.clear()
-
-        if schedule := self.schedule:
-            if not schedule.is_active(now):
-                time.sleep(1)
-                return
-
         sphd.write_string(
             now.strftime("%H:%M"),
             brightness=0.1,
@@ -78,7 +86,7 @@ if __name__ == "__main__":
         signal(SIGINT, exit)
         signal(SIGTERM, exit)
 
-        print("Scroll pHAT HD clock v1.2-3")
+        print("Scroll pHAT HD clock v1.2-4")
         print("Press Ctrl-C to exit")
 
         clock = SphdClock("/etc/sphd-clock/config.yaml")

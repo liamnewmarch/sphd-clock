@@ -9,8 +9,8 @@ You can either download a pre-built deb file, or build one yourself.
 To install a pre-build deb file, [download it](https://github.com/liamnewmarch/sphd-clock/releases/) and run:
 
 ```sh
-wget https://github.com/liamnewmarch/sphd-clock/releases/download/v1.2/sphd-clock_1.2-3_all.deb
-dpkg --install sphd-clock_1.2-3_all.deb
+wget https://github.com/liamnewmarch/sphd-clock/releases/download/v1.2/sphd-clock_1.2-4_all.deb
+dpkg --install sphd-clock_1.2-4_all.deb
 ```
 
 To build the deb file yourself, run:

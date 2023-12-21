@@ -1,5 +1,5 @@
 PACKAGE := sphd-clock
-VERSION := 1.2-3
+VERSION := 1.2-4
 FILENAME := $(PACKAGE)_$(VERSION)_all.deb
 
 .DEFAULT_GOAL: build
